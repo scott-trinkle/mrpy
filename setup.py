@@ -14,4 +14,6 @@ setup(name='mrpy',
       author_email='tscott.trinkle@gmail.com',
       license='MIT',
       packages=['mrpy'],
+      package_dir={'mrpy': 'mrpy'},
+      package_data={'mrpy': ['data/*']},
       zip_safe=False)
