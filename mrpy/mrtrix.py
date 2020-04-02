@@ -53,17 +53,3 @@ def tckmap(tracks, output, **options):
 
     mrtrix_call += f' {tracks} {output}'
     subprocess.run(mrtrix_call.split(' '))
-
-
-tckgen('../../../Current/Data/hardi_2018/original_space/odfs.nii.gz',
-       'test.tck',
-       seed_rejection='../../../Current/Data/hardi_2018/original_space/fa.nii.gz',
-       select=10000,
-       force=True,
-       nthreads=4)
-
-tckmap('test.tck',
-       'test.nii.gz',
-       dec=True,
-       vox=0.05,
-       nthreads=4)
