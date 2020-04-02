@@ -28,7 +28,7 @@ def get_structure_mask(acronym=None, res=50):
     mask, _ = mcc.get_structure_mask(ID)
     mask = reorient_ara_data(mask)
     aff = make_aff(res / 1000)
-    return aff, mask
+    return aff, mask.astype(float)
 
 
 def get_injection_density(exp_id, res=50):
