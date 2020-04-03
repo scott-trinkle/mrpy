@@ -22,10 +22,11 @@ def tckgen(source, tracks, **options):
     for param, val in options.items():
         if param in bool_params:
             mrtrix_call += f' -{param}' if val else ''
-        elif param == 'curvature':
-            angle = 2 * np.arcsin(float(options['step'])
-                                  * 1000 / (2 * val)) * 180 / np.pi
-            mrtrix_call += f' -angle {angle}'
+        elif (param == 'curvature'):
+            angle_from_curve = 2 * np.arcsin(float(options['step'])
+                                             * 1000 / (2 * val)) * 180 / np.pi
+            if 'angle' not in options.keys():
+                mrtrix_call += f' -angle {angle_from_curve}'
         else:
             mrtrix_call += f' -{param} {val}'
 

@@ -29,7 +29,11 @@ mr.tckgen(source='odfs.nii.gz',  # input odf file
 
 # And that's it! All other values are set to sensible defaults, but we can
 # change anything we want, just use the keyword from the tckgen documentation
-# and input whatever values you want.
+# and input whatever values you want. The exception to that is
+# angle/curvature. MRTrix3 uses "angle" as a keyword, I prefer to use
+# "curvature". The MRPy "tckgen" function will accept both - if you input
+# "angle", it will use it, if you input "curvature", it will convert it to an
+# angle and use that. If you input both, it will use the input for "angle"
 
 # Now let's create two track density images (TDI) from our .tck file
 mr.tckmap(tracks='wb_tract.tck',  # the tracks we just generated
