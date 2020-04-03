@@ -1,7 +1,7 @@
 import numpy as np
 from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
-import pkg_resources
-data_path = pkg_resources.resource_filename('mrpy', 'data/')
+from os.path import expanduser
+home = expanduser('~')
 
 
 def make_aff(val):
@@ -12,7 +12,7 @@ def make_aff(val):
 
 def get_mcc(res=50):
     return MouseConnectivityCache(resolution=res,
-                                  manifest_file=data_path + 'mouse_connectivity/manifest.json')
+                                  manifest_file=home + '/mouse_connectivity/manifest.json')
 
 
 def reorient_ara_data(data):
