@@ -19,12 +19,11 @@ or, run "tckgen" or "tckmap" in the terminal
 import mrpy as mr
 
 # Let's do a whole-brain tractography run from the HARDI dataset.
-# I am assuming your current directory is /egwudohope/Data/hardi_2018/
 mr.tckgen(source='odfs.nii.gz',  # input odf file
           tracks='wb_tract.tck',  # output .tck file
           select=50000,  # default is 500000, making smaller for time
           # seeding from the whole brain mask
-          seed_rejection='../ara/ara_brain_mask_50.nii.gz',
+          seed_rejection='brain_mask.nii.gz',
           force=True)  # overwrite existing files
 
 # And that's it! All other values are set to sensible defaults, but we can
