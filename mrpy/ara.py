@@ -1,5 +1,7 @@
+import nrrd
 import numpy as np
 from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
+from allensdk.api.queries.grid_data_api import GridDataApi
 from os.path import expanduser
 home = expanduser('~')
 
@@ -45,3 +47,16 @@ def get_projection_density(exp_id, res=50):
     proj = reorient_ara_data(proj)
     aff = make_aff(res / 1000)
     return aff, proj
+
+
+def get_projection_energy(exp_id, res=50):
+    fn = home + \
+        f'/mouse_connectivity/experiment_{exp_id}/projection_energy_{res}.nrrd'
+    gda = GridDataApi(res)
+    gda.download_projection_grid_data(exp_id, image=['projection_energy'],
+                                      resolution=res,
+                                      save_file_path=fn)
+    energy, _ = nrrd.read(fn)
+    energy = reorient_ara_data(energy)
+    aff = make_aff(res / 1000)
+    return aff, energy
