@@ -2,7 +2,7 @@ import numpy as np
 import subprocess
 
 
-def tckgen(source, tracks, **options):
+def tckgen(source, tracks, mel=False, **options):
     default = {'algorithm': 'iFOD2',
                'select': 500000,
                'step': 0.0375,
@@ -18,7 +18,7 @@ def tckgen(source, tracks, **options):
                    'backtrack', 'crop_at_gmwmi', 'info', 'quiet', 'debug',
                    'force', 'help', 'version']
 
-    mrtrix_call = 'tckgen'
+    mrtrix_call = 'assign-nodes tckgen' if mel else 'tckgen'
     for param, val in options.items():
         if param in bool_params:
             mrtrix_call += f' -{param}' if val else ''
@@ -34,7 +34,7 @@ def tckgen(source, tracks, **options):
     subprocess.run(mrtrix_call.split(' '))
 
 
-def tckmap(tracks, output, **options):
+def tckmap(tracks, output, mel=False, **options):
     default = {'nthreads': 32,
                'precise': True}
     for default_param, default_val in default.items():
@@ -45,7 +45,7 @@ def tckmap(tracks, output, **options):
                    'ends_only', 'info', 'quiet', 'debug', 'force', 'help',
                    'version']
 
-    mrtrix_call = 'tckmap'
+    mrtrix_call = 'assign-nodes tckmap' if mel else 'tckmap'
     for param, val in options.items():
         if param in bool_params:
             mrtrix_call += f' -{param}' if val else ''
@@ -56,7 +56,7 @@ def tckmap(tracks, output, **options):
     subprocess.run(mrtrix_call.split(' '))
 
 
-def tcksift2(in_tracks, in_fod, out_weights, **options):
+def tcksift2(in_tracks, in_fod, out_weights, mel=False, **options):
     default = {'nthreads': 16}
     for default_param, default_val in default.items():
         if default_param not in options.keys():
@@ -66,7 +66,7 @@ def tcksift2(in_tracks, in_fod, out_weights, **options):
                    'remove_untracked', 'output_debug', 'linear',
                    'info', 'quiet', 'debug', 'force', 'help', 'version']
 
-    mrtrix_call = 'tcksift2'
+    mrtrix_call = 'assign-nodes tcksift2' if mel else 'tcksift2'
     for param, val in options.items():
         if param in bool_params:
             mrtrix_call += f' -{param}' if val else ''
