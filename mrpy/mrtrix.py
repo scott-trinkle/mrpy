@@ -54,3 +54,24 @@ def tckmap(tracks, output, **options):
 
     mrtrix_call += f' {tracks} {output}'
     subprocess.run(mrtrix_call.split(' '))
+
+
+def tcksift2(in_tracks, in_fod, out_weights, **options):
+    default = {'nthreads': 16}
+    for default_param, default_val in default.items():
+        if default_param not in options.keys():
+            options[default_param] = default_val
+
+    bool_params = ['fd_scale_gm', 'no_dilate_lut', 'make_null_lobes',
+                   'remove_untracked', 'output_debug', 'linear',
+                   'info', 'quiet', 'debug', 'force', 'help', 'version']
+
+    mrtrix_call = 'tcksift2'
+    for param, val in options.items():
+        if param in bool_params:
+            mrtrix_call += f' -{param}' if val else ''
+        else:
+            mrtrix_call += f' -{param} {val}'
+
+    mrtrix_call += f' {in_tracks} {in_fod} {out_weights}'
+    subprocess.run(mrtrix_call.split(' '))
