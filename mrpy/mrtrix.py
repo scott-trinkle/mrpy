@@ -75,3 +75,27 @@ def tcksift2(in_tracks, in_fod, out_weights, mel=False, **options):
 
     mrtrix_call += f' {in_tracks} {in_fod} {out_weights}'
     subprocess.run(mrtrix_call.split(' '))
+
+
+def tck2connectome(tracks_in, nodes_in, connectome_ouit, mel=False, **options):
+    default = {'nthreads': 16,
+               'assignment_radial_search': 0.15,
+               'vector': True}
+    for default_param, default_val in default.items():
+        if default_param not in options.keys():
+            options[default_param] = default_val
+
+    bool_params = ['assignment_end_voxels', 'assignment_all_voxels',
+                   'scale_length', 'scale_invlength', 'scale_invnodevol',
+                   'symmetric', 'zero_diagonal', 'keep_unassigned', 'vector',
+                   'info', 'quiet', 'debug', 'force', 'help', 'version']
+
+    mrtrix_call = 'assign-nodes tck2connectome' if mel else 'tck2connectome'
+    for param, val in options.items():
+        if param in bool_params:
+            mrtrix_call += f' -{param}' if val else ''
+        else:
+            mrtrix_call += f' -{param} {val}'
+
+    mrtrix_call += f' {tracks_in} {nodes_in} {connectome_out}'
+    subprocess.run(mrtrix_call.split(' '))
