@@ -77,9 +77,8 @@ def tcksift2(in_tracks, in_fod, out_weights, mel=False, **options):
     subprocess.run(mrtrix_call.split(' '))
 
 
-def tck2connectome(tracks_in, nodes_in, connectome_ouit, mel=False, **options):
+def tck2connectome(tracks_in, nodes_in, connectome_out, mel=False, **options):
     default = {'nthreads': 16,
-               'assignment_radial_search': 0.15,
                'vector': True}
     for default_param, default_val in default.items():
         if default_param not in options.keys():
