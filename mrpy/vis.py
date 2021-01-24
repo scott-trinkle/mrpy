@@ -7,6 +7,20 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 def label_rect(rect, text, ax, rotation=0):
+    '''
+    Utility function for labeling a Rectangle object.
+
+    Parameters
+    __________
+    rect : matplotlib.patches.Rectangle
+        Rectangle object to be labeled
+    text : str
+        Label text
+    ax : matplotlib.axes._subplots.AxesSubplot
+        Figure ax
+    rotation : float
+        Rotation angle for label
+    '''
     ax.add_patch(rect)
     rx, ry = rect.get_xy()
     cx = rx + rect.get_width() / 2.0
@@ -17,6 +31,30 @@ def label_rect(rect, text, ax, rotation=0):
 
 def connectome_viewer(data, cmap='inferno', ticks=[0, 1], ticklabels=[0, 1],
                       cmaptitle='Relative log\nweight'):
+    '''
+    Interface for generating connectome figure similar to "A mesoscale
+    connectome of the mouse brain" (Oh et al, 2014).
+
+    Parameters
+    __________
+    data : ndarray
+        Connectome data
+    cmap : str
+        Matplotlib colormap
+    ticks : list
+        Colormap tick values
+    ticklabels : list
+        Colormap tick labels
+    cmaptitle : str
+        Colormap title
+
+    Returns
+    _______
+    fig : matplotlib.figure.Figure
+        Matplotlib figure
+    ax : matplotlib.axes._subplots.AxesSubplot
+        Figure ax
+    '''
 
     # Assumes "data" does not include MDRN or fiber tracts
 

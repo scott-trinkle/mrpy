@@ -1,5 +1,5 @@
 '''
-This tutorial will show you how to download and work with data from the Allen
+This tutorial will show how to download and work with data from the Allen
 Institute.
 
 It will be helpful to reference the web-based Allen Brain Explorer for
@@ -20,13 +20,9 @@ import mrpy as mr
 # "CB", so here is how I call the function:
 aff, CB_mask = mr.get_structure_mask(acronym='CB', res=50)
 
-# A few comments. "res" is a keyword for all of the Allen functions that sets
-# the spatial resolution (in microns) of the output. The default is 50, and
-# that should be fine for almost everything that we do, so you can almost
-# always ignore that argument and call the function without it. If you do want
-# to change the resolution, the options are 10, 25, 50, and 100. The
-# function is called like so:
-aff, CB_mask = mr.get_structure_mask('CB')
+# "res" is a keyword for all of the Allen functions that sets the spatial
+# resolution (in microns) of the output. The default is 50, the options are 10,
+# 25, 50, and 100.
 
 # This function returns two things. CB_mask is the mask itself, it is a
 # NumPy array with 1s where the cerebellum is, and 0s everywhere else. When
@@ -40,15 +36,12 @@ mr.savenii(CB_mask, aff, 'CB_mask.nii.gz')
 # Likewise, when we load a .nii file, it also returns the affine:
 aff, CB_mask = mr.loadnii('CB_mask.nii.gz')
 
-
-# The next type of data we will need is the injection density. This is a
-# spatial map of where the tracer was injected into the mouse for a given
-# Allen experiment. For this, we just need the Allen experiment ID, the
-# 9-digit number that the Allen Institute uses to organize experiments. We will
-# be getting this from the supplementary document of the Wu paper. You can
-# also find the experiment ID for injections to a given structure online
-# here: http://connectivity.brain-map.org. Here I am loading the injection
-# density from the first experiment in the Wu document:
+# The next type of data we will need is the injection density. This is a spatial
+# map of where the tracer was injected into the mouse for a given Allen
+# experiment. For this, we just need the Allen experiment ID, the 9-digit number
+# that the Allen Institute uses to organize experiments.You can find the
+# experiment ID for injections to a given structure online here:
+# http://connectivity.brain-map.org.
 aff, injection = mr.get_injection_density(exp_id=100147861)
 
 # "injection" returns a NumPy array where the value in each voxel is the percent

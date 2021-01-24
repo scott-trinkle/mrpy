@@ -1,18 +1,10 @@
 '''
-I have created complete wrapper functions for the "tckgen" and "tckmap"
-commands from MRTrix3.
+I have created complete wrapper functions for a number of commands from MRTrix3.
 
 These have the exact same capability as the command-line MRTrix3 functions,
 themselves, except with options presented as keyword arguments to Python
-functions. For information on all possible options, see the documentation:
-
-tckgen:
-https://mrtrix.readthedocs.io/en/latest/reference/commands/tckgen.html#tckgen
-
-tckmap:
-https://mrtrix.readthedocs.io/en/latest/reference/commands/tckmap.html
-
-or, run "tckgen" or "tckmap" in the terminal
+functions. For information on all possible options, see the 
+MRTrix3 documentation:
 '''
 
 # First import the package

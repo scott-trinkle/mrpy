@@ -4,21 +4,59 @@ from scipy.stats import levene
 from .utils import loadnii
 
 
-def load_spect(fn_base, num_strings=None, ext='.nii.gz'):
-    if num_strings == None:
-        num_strings = [f'{i:03d}' for i in range(1, 81)]
+def load_spect(fn_base, num_imgs=None, ext='.nii.gz'):
+    '''
+    Utility function for laoding EPSI data from folder of Nifti images.
+    Assumes images represent slices along dimension 3 and are labeled:
+    {fn_base}/001.nii.gz, {fn_base}/002.nii.gz, etc.
 
-    aff, sample = loadnii(fn_base + num_strings[0] + ext)
+    Parameters
+    __________
+    fn_base : str
+        Base file path for images
+    num_imgs : int
+        Number of images in folder
+    ext : str
+        File extension. Should be '.nii.gz' or '.nii'
+
+    Returns
+    _______
+    aff : ndarray
+        Affine matrix
+    data : ndarray
+        EPSI data as 4D array
+    '''
+    if num_imgs is None:
+        num_imgs = [f'{i:03d}' for i in range(1, 81)]
+
+    aff, sample = loadnii(fn_base + num_imgs[0] + ext)
     y, x, w = np.squeeze(sample).shape
 
-    data = np.zeros((y, x, len(num_strings), w))
-    for i, num in enumerate(num_strings):
+    data = np.zeros((y, x, len(num_imgs), w))
+    for i, num in enumerate(num_imgs):
         data[:, :, i] = np.squeeze(loadnii(fn_base + num + ext)[1])
 
     return aff, data
 
 
 def get_hw(data, level):
+    '''
+    Computes spectral half-width from data and percentage level from peak.
+
+    Parameters
+    __________
+    data : ndarray
+        EPSI data as 4D array
+    level : float
+        Percentage level from peak to floor
+
+    Returns
+    _______
+    hw : int
+        Number of indices corresponding to the spectral half-width to the given
+        level
+    '''
+
     if data.ndim != 2:
         raise ValueError('Input data must be already masked / two-dimensional')
 
@@ -37,7 +75,27 @@ def get_hw(data, level):
     return hw
 
 
-def asym(data, hw=20, method='sum', include_peak=True):
+def asym(data, hw=20, method='trapz', include_peak=True):
+    '''
+    Computes spectral asymmetry for the given data and half-width
+
+    Parameters
+    __________
+    data : ndarray
+        EPSI data as 4D array. Assumes last axis is spectral
+    hw : int
+        Half-width. Number of array indices for integration
+    method : 'str'
+        Integration method. 'trapz' or 'sum'.
+    include_peak : bool
+        Whether or not to include peak in integration
+
+    Returns
+    _______
+    asym : ndarray
+        Array of asymmetry values, after integrating across last dimension
+        in data
+    '''
     n = data.shape[-1]
     if n % 2 == 0:
         n0 = n//2 - 1  # 95 for our data
@@ -65,7 +123,67 @@ def asym(data, hw=20, method='sum', include_peak=True):
     return asym
 
 
+def shift_asym(data, hw=20):
+    '''
+    Computes spectral asymmetry for the given data and half-width.
+    Assumes a length of 192 in spectral dimension, and shifts peak to center
+    before integration. Performs trapezoid integration with peak included.
+
+    Parameters
+    __________
+    data : ndarray
+        EPSI data as 4D array. Assumes last axis is spectral and has length 192
+    hw : int
+        Half-width. Number of array indices for integration
+
+    Returns
+    _______
+    asym : ndarray
+        Array of asymmetry values, after integrating across last dimension
+        in data
+    shifts : ndarray
+        Array of shifts, the number of indices the peak was from center
+    '''
+    shifted = np.zeros((data.shape[0], 41))
+    shifts = 95 - np.argmax(data, axis=1)
+    for shift in np.unique(shifts):
+        shiftmask = shifts == shift
+        shifted[shiftmask] = data[shiftmask, 95-shift-20:95-shift+20+1]
+    n0 = 20
+
+    lo = data[..., n0-hw:n0+1]
+    hi = data[..., n0:n0+1+hw]
+    t = np.trapz(data[..., n0-hw:n0+1+hw])
+
+    asym = (np.trapz(hi) - np.trapz(lo)) / t
+
+    return asym, shifts
+
+
 def default_signal_noise_masks(n=192, s0=95, ds=5, n0=60, dn=15):
+    '''
+    Creates signal/noise mask for sue in denoise_SSPC.
+
+    Parameters
+    __________
+    n : int
+        Length of spectral array
+    s0 : int
+        Peak index
+    ds : int
+        Signal width
+    n0 : int
+        Noise index
+    dn : int
+        Noise width
+
+    Returns
+    _______
+    signal : ndarray
+        Signal mask
+    noise : ndarray
+        Noise mask
+    '''
     inds = np.arange(n)
 
     signal = abs(inds - s0) <= ds
@@ -94,7 +212,19 @@ def denoise_SSPC(X, mask=None, alpha=0.5e-3,
         is higher dimensional, use mask to select voxels.
     mask : array
         Used to exclude background voxels if data is not already masked
+    alpha : float
+        Significance level for levene test
+    signalmask : ndarray
+        Spectral indices corresponding to known signal
+    noisemask : ndarray
+        Spectral indices corresponding to known noise
+    print_rank : bool
+        Prints rank
 
+    Returns
+    _______
+    denoised_data : ndarray
+        Denoised data
     '''
 
     # Check if data has empty dimension
